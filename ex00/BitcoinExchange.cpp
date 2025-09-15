@@ -1,7 +1,7 @@
 
 #include "BitcoinExchange.hpp"
 
-void printDb(std::map<std::string, float> m)
+void easyPrintDb(std::map<std::string, float> m)
 {
 	for (std::map<std::string, float>::iterator it = m.begin(); it != m.end(); ++it)
 	{
@@ -24,7 +24,7 @@ std::map<std::string, float> parseDb(std::string path)
 			continue ;
 		ret[date] = std::atof(value.c_str());
 	}
-	printDb(ret);
+	easyPrintDb(ret);
 	return (ret);
 }
 
