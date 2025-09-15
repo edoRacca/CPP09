@@ -1,6 +1,14 @@
 
 #include "BitcoinExchange.hpp"
 
+void printDb(std::map<std::string, float> m)
+{
+	for (std::map<std::string, float>::iterator it = m.begin(); it != m.end(); ++it)
+	{
+		std::cout << std::fixed << std::setprecision(2) << it->first << " -> " << it->second << std::endl;
+	}
+}
+
 std::map<std::string, float> parseDb(std::string path)
 {
 	std::ifstream	file(path.c_str());
@@ -8,17 +16,15 @@ std::map<std::string, float> parseDb(std::string path)
 	std::map<std::string, float> ret;
 
 	if (!file)
-	{
-		std::cout << "GAY 2" << std::endl;
 		return (ret);
-	}
 	while (std::getline(file, date, ','))
 	{
-		if (date == "date")
-			continue ;
 		std::getline(file, value);
+		if (date == "date" || value == "exchange_rate")
+			continue ;
 		ret[date] = std::atof(value.c_str());
 	}
+	printDb(ret);
 	return (ret);
 }
 
