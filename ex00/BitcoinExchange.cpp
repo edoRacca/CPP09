@@ -24,7 +24,7 @@ std::map<std::string, float> parseDb(std::string path)
 			continue ;
 		ret[date] = std::atof(value.c_str());
 	}
-	easyPrintDb(ret);
+	// easyPrintDb(ret);
 	return (ret);
 }
 

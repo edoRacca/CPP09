@@ -7,6 +7,7 @@
 # include <iomanip>
 # include <fstream>
 # include <string>
+# include <algorithm>
 # include <map>
 
 class BitcoinExchange
