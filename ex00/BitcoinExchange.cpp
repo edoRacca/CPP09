@@ -4,7 +4,7 @@
 std::map<std::string, float> parseDb(std::string path)
 {
 	std::ifstream	file(path.c_str());
-	std::string		line;
+	std::string		date, value;
 	std::map<std::string, float> ret;
 
 	if (!file)
@@ -12,11 +12,13 @@ std::map<std::string, float> parseDb(std::string path)
 		std::cout << "GAY 2" << std::endl;
 		return (ret);
 	}
-	while (std::getline(file, line))
+	while (std::getline(file, date, ','))
 	{
-		if (line == "date,exchange_rate")
+		if (date == "date")
 			continue ;
-	} 
+		std::getline(file, value);
+		ret[date] = std::atof(value.c_str());
+	}
 	return (ret);
 }
 
