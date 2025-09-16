@@ -1,21 +1,88 @@
 
 #include "BitcoinExchange.hpp"
 
-void printDb(std::map<std::string, float> m)
+void printDb(std::string date, float value, float multiplier)
 {
-	for (std::map<std::string, float>::iterator it = m.begin(); it != m.end(); ++it)
+	std::cout << std::fixed << std::setprecision(2) << date << " => " << value << " = " << value * multiplier << std::endl;
+}
+
+std::string extractDate(std::string date, char c)
+{
+	unsigned int first = date.find('-');
+	unsigned int second = date.find('-', first + 1);
+	if (c == 'd')
+		return(date.substr(second + 1));
+	if (c == 'm')
+		return(date.substr(first + 1, second - first - 1));
+	else
+		return(date.substr(0, first));
+}
+
+int isValidDate(int y, int m, int d)
+{
+	if (y < 2009 || y > 2022)
+		return (false);
+	if (m < 1 || m > 12)
+		return (false);
+	if (m == 2 && (y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)) && d > 29)
+		return (false);
+	if (m == 2 && !(y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)) && d > 28)
+		return (false);
+	if ((m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) && d > 31)
+		return (false);
+	if ((m == 4 || m == 6 || m == 9 || m == 11) && d > 31)
+		return (false);
+	std::cout << "y: " << y << ", m: " << m << ", d: " << d << std::endl;
+	return (true);
+}
+
+int dateDiff(std::string date1, std::string date2)
+{
+	unsigned int y1 = std::atoi(extractDate(date1, 'y').c_str());
+	unsigned int m1 = std::atoi(extractDate(date1, 'm').c_str());
+	unsigned int d1 = std::atoi(extractDate(date1, 'd').c_str());
+	unsigned int y2 = std::atoi(extractDate(date2, 'y').c_str());
+	unsigned int m2 = std::atoi(extractDate(date2, 'm').c_str());
+	unsigned int d2 = std::atoi(extractDate(date2, 'd').c_str());
+	std::tm t1 = std::tm();
+	std::tm t2 = std::tm();
+	t1.tm_year = y1 - 1900;
+	t1.tm_mon = m1 - 1;
+	t1.tm_mday = d1;
+	t1.tm_hour = 12;
+	t2.tm_year = y2 - 1900;
+	t2.tm_mon = m2 - 1;
+	t2.tm_mday = d2;
+	t2.tm_hour = 12;
+	return (std::difftime(std::mktime(&t1), std::mktime(&t2)) / (60 * 60 * 24));
+}
+
+std::string checkClosestDate(BitcoinExchange& b, std::string date)
+{
+	std::multimap<std::string, float>::iterator it = b.getDb().lower_bound(date);
+
+	if (it == b.getDb().begin())
+		return (it->first);
+	else if (it == b.getDb().end())
+		return ((--it)->first);
+	else
 	{
-		std::cout << std::fixed << std::setprecision(2) << it->first << " -> " << it->second << std::endl;
+		if (isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
+		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == false)
+			return ("");
+		std::multimap<std::string, float>::iterator prev = it;
+		--prev;
+		if (dateDiff(date, prev->first) < dateDiff(it->first, date))
+			return (prev->first);
+		else
+			return (it->first);
 	}
 }
 
-std::map<std::string, float> parseInputFile(std::ifstream& file)
+void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
 {
-	std::string		date, value;
-	std::map<std::string, float> ret;
+	std::string		date, value, closest;
 
-	if (!file)
-		return (ret);
 	while (std::getline(file, date, '|'))
 	{
 		date.erase(std::remove(date.begin(), date.end(), ' '), date.end());
@@ -23,24 +90,14 @@ std::map<std::string, float> parseInputFile(std::ifstream& file)
 		value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
 		if (date == "date" || value == "value")
 			continue ;
-		// ret[date] = std::atof(value.c_str());
-		std::cout << "[" << date << "]" << std::endl;
-		std::cout << "{" << value << "}" << std::endl;
+		closest = checkClosestDate(b, date);
+		if (closest.empty())
+			std::cout << "Error: wrong date value => " << date << std::endl;
+		else if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
+			std::cout << "Error: wrong value passed => " << value << std::endl;
+		else
+			printDb(date, std::atof(value.c_str()), (b.getDb().find(closest)->second));
 	}
-	// i valori vengono sovrascritti perche le date qui sono uguali, forse meglio non usare map?
-	// printDb(ret);
-	return (ret);
-}
-
-void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
-{
-	std::map<std::string, float> parse = parseInputFile(file);
-// 	for (std::map<std::string, float>::iterator it = parse.begin(); it != parse.end(); ++it)
-// 	{
-// 		std::string year, month, day;
-// 
-	// }
-	(void)b;
 }
 
 int main(int ac, char **av)
