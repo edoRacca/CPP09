@@ -20,6 +20,7 @@ std::string extractDate(std::string date, char c)
 
 int isValidDate(int y, int m, int d)
 {
+	// std::cout << "y: " << y << ", m: " << m << ", d: " << d << std::endl;
 	if (y < 2009 || y > 2022)
 		return (false);
 	if (m < 1 || m > 12)
@@ -32,7 +33,6 @@ int isValidDate(int y, int m, int d)
 		return (false);
 	if ((m == 4 || m == 6 || m == 9 || m == 11) && d > 31)
 		return (false);
-	std::cout << "y: " << y << ", m: " << m << ", d: " << d << std::endl;
 	return (true);
 }
 
@@ -61,15 +61,20 @@ std::string checkClosestDate(BitcoinExchange& b, std::string date)
 {
 	std::multimap<std::string, float>::iterator it = b.getDb().lower_bound(date);
 
-	if (it == b.getDb().begin())
+	if (it == b.getDb().begin() && isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
+		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == true)
 		return (it->first);
-	else if (it == b.getDb().end())
+	else if (it == b.getDb().end() && isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
+		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == true)
 		return ((--it)->first);
 	else
 	{
 		if (isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
 		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == false)
+		{
+			std::cout << "PIPPO\n";
 			return ("");
+		}
 		std::multimap<std::string, float>::iterator prev = it;
 		--prev;
 		if (dateDiff(date, prev->first) < dateDiff(it->first, date))
@@ -91,7 +96,8 @@ void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
 		if (date == "date" || value == "value")
 			continue ;
 		closest = checkClosestDate(b, date);
-		if (closest.empty())
+		// std::cout << "closest: [" << closest << "], date: " << date << std::endl;
+		if (closest == "")
 			std::cout << "Error: wrong date value => " << date << std::endl;
 		else if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
 			std::cout << "Error: wrong value passed => " << value << std::endl;
