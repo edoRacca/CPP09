@@ -84,26 +84,36 @@ std::string checkClosestDate(BitcoinExchange& b, std::string date)
 	}
 }
 
+bool checkFormat(std::string line)
+{
+	if ((line.find('|') == std::string::npos))
+}
+
 void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
 {
-	std::string		date, value, closest;
+	std::string		date, value, closest, line;
 
-	while (std::getline(file, date))
+	while (std::getline(file, line))
 	{
-		date.erase(std::remove(date.begin(), date.end(), ' '), date.end());
-		std::getline(file, value);
-		value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
-		if (date == "date" || value == "value")
+		if (line.find('|') == std::string::npos)
 			continue ;
-		std::cout << "date: " << date << std::endl;
-		closest = checkClosestDate(b, date);
-		// std::cout << "closest: [" << closest << "], date: " << date << std::endl;
-		if (closest == "")
-			std::cout << "Error: wrong date value => " << date << std::endl;
-		else if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
-			std::cout << "Error: wrong value passed => " << value << std::endl;
-		else
-			printDb(date, std::atof(value.c_str()), (b.getDb().find(closest)->second));
+		date = line.substr(0, line.find('|') - 1);
+		value = line.substr(line.find('|') + 2);
+		// date.erase(std::remove(date.begin(), date.end(), ' '), date.end());
+		// value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+		// if (date == "date" || value == "value")
+		// 	continue ;
+		// std::cout << "date: " << date << std::endl;
+		// closest = checkClosestDate(b, date);
+		// // std::cout << "closest: [" << closest << "], date: " << date << std::endl;
+		// if (closest == "")
+		// 	std::cout << "Error: wrong date value => " << date << std::endl;
+		// else if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
+		// 	std::cout << "Error: wrong value passed => " << value << std::endl;
+		// else
+		// 	printDb(date, std::atof(value.c_str()), (b.getDb().find(closest)->second));
+		std::cout << "[" << date << "][" << value << "]" << std::endl;
+		(void)b;
 	}
 }
 
