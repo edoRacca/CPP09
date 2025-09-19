@@ -88,13 +88,14 @@ void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
 {
 	std::string		date, value, closest;
 
-	while (std::getline(file, date, '|'))
+	while (std::getline(file, date))
 	{
 		date.erase(std::remove(date.begin(), date.end(), ' '), date.end());
 		std::getline(file, value);
 		value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
 		if (date == "date" || value == "value")
 			continue ;
+		std::cout << "date: " << date << std::endl;
 		closest = checkClosestDate(b, date);
 		// std::cout << "closest: [" << closest << "], date: " << date << std::endl;
 		if (closest == "")
