@@ -3,7 +3,7 @@
 
 void printDb(std::string date, float value, float multiplier)
 {
-	std::cout << std::fixed << std::setprecision(2) << date << " => " << value << " = " << value * multiplier << std::endl;
+	std::cout  << date << " => " << value << " = " << value * multiplier << std::endl;
 }
 
 std::string extractDate(std::string date, char c)
@@ -20,7 +20,6 @@ std::string extractDate(std::string date, char c)
 
 int isValidDate(int y, int m, int d)
 {
-	// std::cout << "y: " << y << ", m: " << m << ", d: " << d << std::endl;
 	if (y < 2009 || y > 2022)
 		return (false);
 	if (m < 1 || m > 12)
@@ -71,10 +70,7 @@ std::string checkClosestDate(BitcoinExchange& b, std::string date)
 	{
 		if (isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
 		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == false)
-		{
-			std::cout << "PIPPO\n";
 			return ("");
-		}
 		std::multimap<std::string, float>::iterator prev = it;
 		--prev;
 		if (dateDiff(date, prev->first) < dateDiff(it->first, date))
@@ -86,7 +82,23 @@ std::string checkClosestDate(BitcoinExchange& b, std::string date)
 
 bool checkFormat(std::string line)
 {
-	if ((line.find('|') == std::string::npos))
+	size_t pos = line.find('|');
+	if (pos == std::string::npos || line[pos - 1] != ' ' || line[pos + 1] != ' ')
+	{
+		std::cout << "Error: wrong date value => " << line << std::endl;
+		return (false);
+	}
+	return (true);
+}
+
+void checkRightValues(BitcoinExchange& b, std::string closest, std::string date, std::string value)
+{
+	if (closest == "")
+		std::cout << "Error: wrong date value => " << date << std::endl;
+	else if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
+		std::cout << "Error: wrong value passed => " << value << std::endl;
+	else
+		printDb(date, std::atof(value.c_str()), (b.getDb().find(closest)->second));
 }
 
 void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
@@ -95,25 +107,16 @@ void checkBitcoinsDate(BitcoinExchange& b, std::ifstream& file)
 
 	while (std::getline(file, line))
 	{
-		if (line.find('|') == std::string::npos)
+		if (!checkFormat(line))
 			continue ;
 		date = line.substr(0, line.find('|') - 1);
 		value = line.substr(line.find('|') + 2);
-		// date.erase(std::remove(date.begin(), date.end(), ' '), date.end());
-		// value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
-		// if (date == "date" || value == "value")
-		// 	continue ;
-		// std::cout << "date: " << date << std::endl;
-		// closest = checkClosestDate(b, date);
-		// // std::cout << "closest: [" << closest << "], date: " << date << std::endl;
-		// if (closest == "")
-		// 	std::cout << "Error: wrong date value => " << date << std::endl;
-		// else if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
-		// 	std::cout << "Error: wrong value passed => " << value << std::endl;
-		// else
-		// 	printDb(date, std::atof(value.c_str()), (b.getDb().find(closest)->second));
-		std::cout << "[" << date << "][" << value << "]" << std::endl;
-		(void)b;
+		date.erase(std::remove(date.begin(), date.end(), ' '), date.end());
+		value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+		if (date == "date" || value == "value")
+			continue ;
+		closest = checkClosestDate(b, date);
+		checkRightValues(b, closest, date, value);
 	}
 }
 
