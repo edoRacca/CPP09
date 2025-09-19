@@ -58,7 +58,7 @@ int dateDiff(std::string date1, std::string date2)
 
 std::string checkClosestDate(BitcoinExchange& b, std::string date)
 {
-	std::multimap<std::string, float>::iterator it = b.getDb().lower_bound(date);
+	std::map<std::string, float>::iterator it = b.getDb().lower_bound(date);
 
 	if (it == b.getDb().begin() && isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
 		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == true)
@@ -71,7 +71,7 @@ std::string checkClosestDate(BitcoinExchange& b, std::string date)
 		if (isValidDate(std::atoi(extractDate(date, 'y').c_str()), \
 		std::atoi(extractDate(date, 'm').c_str()), std::atoi(extractDate(date, 'd').c_str())) == false)
 			return ("");
-		std::multimap<std::string, float>::iterator prev = it;
+		std::map<std::string, float>::iterator prev = it;
 		--prev;
 		if (dateDiff(date, prev->first) < dateDiff(it->first, date))
 			return (prev->first);

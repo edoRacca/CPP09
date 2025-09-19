@@ -15,14 +15,14 @@
 class BitcoinExchange
 {
 private:
-	std::multimap<std::string, float> _db;
+	std::map<std::string, float> _db;
 
 public:
 	BitcoinExchange(std::string path);
 	BitcoinExchange(const BitcoinExchange& b);
 	~BitcoinExchange();
 
-	std::multimap<std::string, float>& getDb(void);
+	std::map<std::string, float>& getDb(void);
 
 	BitcoinExchange& operator=(const BitcoinExchange& b);
 };
