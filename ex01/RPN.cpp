@@ -71,7 +71,7 @@ void	RPN::notation(std::string expr)
 	{
 		if (isInvalidChar(val))
 		{
-			std::cout << "Error: invalid character" << std::endl;
+			std::cerr << "Error: invalid character" << std::endl;
 			return ;
 		}
 		checkValue(this->_s, val);
