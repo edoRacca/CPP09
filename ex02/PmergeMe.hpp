@@ -8,6 +8,7 @@
 # include <vector>
 # include <deque>
 # include <ctime>
+# include <cmath>
 
 class PmergeMe
 {
@@ -25,6 +26,7 @@ public:
 	std::vector<int> getV(void) const;
 	std::deque<int> getD(void) const;
 
+	bool init_values(PmergeMe& p, char **s, int size);
 	int mergeInsert(char **values, int size);
 
 	PmergeMe& operator=(const PmergeMe& p);
