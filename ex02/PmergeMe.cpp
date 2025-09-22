@@ -50,23 +50,34 @@ bool PmergeMe::init_values(PmergeMe& p, char **s, int size)
 	return (true);
 }
 
+std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
+{
+	if ((int)v.size() < 2)
+		return (v);
+	std::vector<int> big, small;
+	for(int i = 0; i + 1 < (int)v.size(); i += 2)
+	{
+		if (v[i] < v[i + 1])
+		{
+			big.push_back(v[i + 1]);
+			small.push_back(v[i]);
+		}
+		else
+		{
+			small.push_back(v[i + 1]);
+			big.push_back(v[i]);
+		}
+	}
+	if ((int)v.size() %  2 == 1)
+		small.push_back(v[v.size() - 1]);
+	std::vector<int> main = fordJohnsonAlgorithm(big);
+}
 
 int PmergeMe::mergeInsert(char **values, int size)
 {
 	if (!init_values(*this, values, size))
 		return (std::cerr << "Error\n", 1);
-	std::vector<std::pair<int,int>> block;
-	std::vector<int> leftovers;
-	for (size_t i = 0; i + 1 < this->_v.size(); i += 2)
-	{
-		if (this->_v[i] > this->_v[i + 1])
-			block.push_back(std::make_pair(this->_v[i + 1], this->_v[i]));
-		else
-			block.push_back(std::make_pair(this->_v[i], this->_v[i + 1]));
-	}
-	if (this->_v.size() % 2 == 1)
-		leftovers.push_back(this->_v[this->_v.size() - 1]);
-	
+	// std::vector<int>
 	return (0);
 }
 
