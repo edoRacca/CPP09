@@ -50,6 +50,11 @@ bool PmergeMe::init_values(PmergeMe& p, char **s, int size)
 	return (true);
 }
 
+long	jacobsthalIndex(long n)
+{
+	return ((pow(2, n) - pow(-1, n)) / 3);
+}
+
 std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
 {
 	if ((int)v.size() < 2)
@@ -70,14 +75,15 @@ std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
 	}
 	if ((int)v.size() %  2 == 1)
 		small.push_back(v[v.size() - 1]);
-	std::vector<int> main = fordJohnsonAlgorithm(big);
+	big = fordJohnsonAlgorithm(big);
+	
+	return (big);
 }
 
 int PmergeMe::mergeInsert(char **values, int size)
 {
 	if (!init_values(*this, values, size))
 		return (std::cerr << "Error\n", 1);
-	// std::vector<int>
 	return (0);
 }
 
