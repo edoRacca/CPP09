@@ -50,9 +50,30 @@ bool PmergeMe::init_values(PmergeMe& p, char **s, int size)
 	return (true);
 }
 
-long	jacobsthalIndex(long n)
+std::vector<int> jacobsthalSequence(int index)
 {
-	return ((pow(2, n) - pow(-1, n)) / 3);
+	std::vector<int> ret;
+	ret.push_back(0);
+	ret.push_back(1);
+	while (ret[(int)ret.size() - 1] < index)
+		ret.push_back(ret[(int)ret.size() - 1] + 2 * ret[(int)ret.size() - 2]);
+	return (ret);
+}
+
+std::vector<int> jacobsthalOrder(int index)
+{
+	std::vector<int> jacob = jacobsthalSequence(index);
+	std::vector<int> jorder;
+	for (int i = 2; i < (int)jacob.size(); i++)
+	{
+		int start = std::min(index, jacob[i - 1] + 1);
+		int end = std::min(index, jacob[i]);
+		for (int j = end; j >= start; j--)
+			jorder.push_back(j);
+		if (end == index)
+			break ;
+	}
+	return (jorder);
 }
 
 std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
@@ -76,14 +97,40 @@ std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
 	if ((int)v.size() %  2 == 1)
 		small.push_back(v[v.size() - 1]);
 	big = fordJohnsonAlgorithm(big);
-	
+	if (!small.empty())
+	{
+		std::vector<int>::iterator index = std::lower_bound(big.begin(), big.end(), small[0]);
+		big.insert(index, small[0]);
+	}
+	if ((int)small.size() > 0)
+	{
+		std::vector<int> jorder = jacobsthalOrder((int)small.size());
+		for (int i = 0; i < (int)jorder.size(); i++)
+		{
+			int idx = jorder[i];
+			int s = small[idx - 1];
+			std::vector<int>::iterator index = std::lower_bound(big.begin(), big.end(), s);
+			big.insert(index, s);
+		}
+	}
 	return (big);
+}
+
+void PmergeMe::printV(std::vector<int>& v, std::string prefix)
+{
+	std::cout << prefix;
+	for (int i = 0; i < (int)v.size(); i++)
+		std::cout << v[i] << (i != (int)v.size() - 1 ? " " : "");
+	std::cout << std::endl;
 }
 
 int PmergeMe::mergeInsert(char **values, int size)
 {
 	if (!init_values(*this, values, size))
 		return (std::cerr << "Error\n", 1);
+	printV(this->_v,"Before:\t");
+	std::vector<int> v = fordJohnsonAlgorithm(this->_v);
+	printV(v, "After:\t");
 	return (0);
 }
 
