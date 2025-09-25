@@ -26,7 +26,7 @@ public:
 	std::vector<int> getV(void) const;
 	std::deque<int> getD(void) const;
 
-	void printV(std::vector<int>& v, std::string prefix);
+
 	bool init_values(PmergeMe& p, char **s, int size);
 	int mergeInsert(char **values, int size);
 

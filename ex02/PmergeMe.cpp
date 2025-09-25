@@ -50,7 +50,7 @@ bool PmergeMe::init_values(PmergeMe& p, char **s, int size)
 	return (true);
 }
 
-std::vector<int> jacobsthalSequence(int index)
+std::vector<int> jacobsthalSequenceV(int index)
 {
 	std::vector<int> ret;
 	ret.push_back(0);
@@ -60,9 +60,9 @@ std::vector<int> jacobsthalSequence(int index)
 	return (ret);
 }
 
-std::vector<int> jacobsthalOrder(int index)
+std::vector<int> jacobsthalOrderV(int index)
 {
-	std::vector<int> jacob = jacobsthalSequence(index);
+	std::vector<int> jacob = jacobsthalSequenceV(index);
 	std::vector<int> jorder;
 	for (int i = 2; i < (int)jacob.size(); i++)
 	{
@@ -76,7 +76,8 @@ std::vector<int> jacobsthalOrder(int index)
 	return (jorder);
 }
 
-std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
+
+std::vector<int> fordJohnsonAlgorithmV(std::vector<int>& v)
 {
 	if ((int)v.size() < 2)
 		return (v);
@@ -96,7 +97,7 @@ std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
 	}
 	if ((int)v.size() %  2 == 1)
 		small.push_back(v[v.size() - 1]);
-	big = fordJohnsonAlgorithm(big);
+	big = fordJohnsonAlgorithmV(big);
 	if (!small.empty())
 	{
 		std::vector<int>::iterator index = std::lower_bound(big.begin(), big.end(), small[0]);
@@ -104,7 +105,7 @@ std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
 	}
 	if ((int)small.size() > 0)
 	{
-		std::vector<int> jorder = jacobsthalOrder((int)small.size());
+		std::vector<int> jorder = jacobsthalOrderV((int)small.size());
 		for (int i = 0; i < (int)jorder.size(); i++)
 		{
 			int idx = jorder[i];
@@ -116,21 +117,15 @@ std::vector<int> fordJohnsonAlgorithm(std::vector<int>& v)
 	return (big);
 }
 
-void PmergeMe::printV(std::vector<int>& v, std::string prefix)
-{
-	std::cout << prefix;
-	for (int i = 0; i < (int)v.size(); i++)
-		std::cout << v[i] << (i != (int)v.size() - 1 ? " " : "");
-	std::cout << std::endl;
-}
-
 int PmergeMe::mergeInsert(char **values, int size)
 {
 	if (!init_values(*this, values, size))
 		return (std::cerr << "Error\n", 1);
-	printV(this->_v,"Before:\t");
-	std::vector<int> v = fordJohnsonAlgorithm(this->_v);
-	printV(v, "After:\t");
+	std::time_t time1 = std::time(NULL);
+	std::vector<int> v = fordJohnsonAlgorithmV(this->_v);
+	std::time_t time2 = std::time(NULL);
+	std::cout << "time v: " << std::difftime(time2, time1) << std::endl;
+
 	return (0);
 }
 
