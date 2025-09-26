@@ -9,14 +9,16 @@
 # include <deque>
 # include <ctime>
 # include <cmath>
+# include <iomanip>
+# include <sys/time.h>
 
 class PmergeMe
 {
 private:
 	std::vector<int>	_v;
-	size_t				_vtime;
+	double				_vtime;
 	std::deque<int>		_d;
-	size_t				_dtime;
+	double				_dtime;
 
 public:
 	PmergeMe();
@@ -25,6 +27,8 @@ public:
 
 	std::vector<int> getV(void) const;
 	std::deque<int> getD(void) const;
+	double	getVTime() const;
+	double	getDTime() const;
 
 
 	bool init_values(PmergeMe& p, char **s, int size);

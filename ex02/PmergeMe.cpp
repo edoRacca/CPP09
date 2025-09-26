@@ -30,6 +30,16 @@ std::deque<int> PmergeMe::getD(void) const
 	return (this->_d);
 }
 
+double	PmergeMe::getVTime() const
+{
+	return (this->_vtime);
+}
+
+double	PmergeMe::getDTime() const
+{
+	return (this->_dtime);
+}
+
 bool isDigitStr(std::string s)
 {
 	for (size_t i = 0; i < s.size(); i++)
@@ -188,7 +198,12 @@ int PmergeMe::mergeInsert(char **values, int size)
 {
 	if (!init_values(*this, values, size))
 		return (std::cerr << "Error\n", 1);
+	struct timeval timev1, timev2;
+	gettimeofday(&timev1, NULL);
 	this->_v = fordJohnsonAlgorithmV(this->_v);
+	gettimeofday(&timev2, NULL);
+	this->_vtime = (double)(((long long)timev2.tv_sec * 1000000 + timev2.tv_usec) - ((long long)timev1.tv_sec * 1000000 + timev1.tv_usec)) / 1000;
+	std::cout << std::fixed << std::setprecision(5) << "Duration: " << this->_vtime << std::endl;
 	this->_d = fordJohnsonAlgorithmD(this->_d);
 	return (0);
 }
