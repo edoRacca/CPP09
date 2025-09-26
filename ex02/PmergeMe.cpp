@@ -117,15 +117,79 @@ std::vector<int> fordJohnsonAlgorithmV(std::vector<int>& v)
 	return (big);
 }
 
+std::deque<int> jacobsthalSequenceD(int index)
+{
+	std::deque<int> ret;
+	ret.push_back(0);
+	ret.push_back(1);
+	while (ret[(int)ret.size() - 1] < index)
+		ret.push_back(ret[(int)ret.size() - 1] + 2 * ret[(int)ret.size() - 2]);
+	return (ret);
+}
+
+std::deque<int> jacobsthalOrderD(int index)
+{
+	std::deque<int> jacob = jacobsthalSequenceD(index);
+	std::deque<int> jorder;
+	for (int i = 2; i < (int)jacob.size(); i++)
+	{
+		int start = std::min(index, jacob[i - 1] + 1);
+		int end = std::min(index, jacob[i]);
+		for (int j = end; j >= start; j--)
+			jorder.push_back(j);
+		if (end == index)
+			break ;
+	}
+	return (jorder);
+}
+
+
+std::deque<int> fordJohnsonAlgorithmD(std::deque<int>& v)
+{
+	if ((int)v.size() < 2)
+		return (v);
+	std::deque<int> big, small;
+	for(int i = 0; i + 1 < (int)v.size(); i += 2)
+	{
+		if (v[i] < v[i + 1])
+		{
+			big.push_back(v[i + 1]);
+			small.push_back(v[i]);
+		}
+		else
+		{
+			small.push_back(v[i + 1]);
+			big.push_back(v[i]);
+		}
+	}
+	if ((int)v.size() %  2 == 1)
+		small.push_back(v[v.size() - 1]);
+	big = fordJohnsonAlgorithmD(big);
+	if (!small.empty())
+	{
+		std::deque<int>::iterator index = std::lower_bound(big.begin(), big.end(), small[0]);
+		big.insert(index, small[0]);
+	}
+	if ((int)small.size() > 0)
+	{
+		std::deque<int> jorder = jacobsthalOrderD((int)small.size());
+		for (int i = 0; i < (int)jorder.size(); i++)
+		{
+			int idx = jorder[i];
+			int s = small[idx - 1];
+			std::deque<int>::iterator index = std::lower_bound(big.begin(), big.end(), s);
+			big.insert(index, s);
+		}
+	}
+	return (big);
+}
+
 int PmergeMe::mergeInsert(char **values, int size)
 {
 	if (!init_values(*this, values, size))
 		return (std::cerr << "Error\n", 1);
-	std::time_t time1 = std::time(NULL);
-	std::vector<int> v = fordJohnsonAlgorithmV(this->_v);
-	std::time_t time2 = std::time(NULL);
-	std::cout << "time v: " << std::difftime(time2, time1) << std::endl;
-
+	this->_v = fordJohnsonAlgorithmV(this->_v);
+	this->_d = fordJohnsonAlgorithmD(this->_d);
 	return (0);
 }
 

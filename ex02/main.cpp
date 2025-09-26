@@ -18,4 +18,5 @@ int main(int ac, char **av)
 	printContainer(&av[1], "Before:\t", ac - 1);
 	p.mergeInsert(&av[1], ac - 1);
 	printContainer(p.getV(), "After:\t", (int)p.getV().size());
+	printContainer(p.getD(), "After:\t", (int)p.getD().size());
 }
